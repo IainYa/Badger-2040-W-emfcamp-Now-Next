@@ -1,8 +1,8 @@
 # Badger-2040-W-emfcamp-Now-Next
 An app for the Badger 2040 W to display Now/Next info for the main stages at EMF2024.  Intended to be copied into the Badger OS that ships with the badge.
 
-This app uses and adapter for the EMF API which can be found here:  https://github.com/DanNixon/emfcamp-schedule-api/tree/main/adapter  Thanks Dan! :-)
-The adapter allows for testing by including a fake_epoch which offsets the schedule accordingly.
+This app uses an adapter for the EMF API which can be found here:  https://github.com/DanNixon/emfcamp-schedule-api/tree/main/adapter
+The adapter allows for testing by including a fake_epoch which offsets the schedule accordingly.  Thanks Dan! :-)
 
 **N.B. This is all subject to change as the 2024 schedule has not been released yet.  Some changes are likely.**
 
@@ -35,8 +35,10 @@ The `sleeptime` variable sets the time between updates.
 
 The `timeout` variable defines how quickly the badge goes to sleep.  By default, this is 10 seconds when waking up to refresh or 30 seconds if woken up by a button press.
 
+These values should be edited in the code if you wish to change them.
 
-# Operation
+
+# Usage
 When the app starts or wakes up, it will connect to WiFi and retrieve the Now and Next events for Stages A, B and C.  It will then display the main page with an overview of all three stages.
 
 Pressing `BUTTON_A`, `BUTTON_B` or `BUTTON_C` will open the details for the "now" event on the respective stage.  Pressing the same button again will open the details for the "next" event on that Stage.  Subsequent presses will toggle between "now" and "next".
