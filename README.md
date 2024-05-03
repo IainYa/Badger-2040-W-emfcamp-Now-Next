@@ -6,6 +6,7 @@ The adapter allows for testing by including a fake_epoch which offsets the sched
 
 **N.B. This is all subject to change as the 2024 schedule has not been released yet.  Some changes are likely.**
 
+![Main page showing now and next](/photos/Main.jpg)
 
 # Installation
 Copy the files from the Code folder into the Badger OS firmware folder structure.
