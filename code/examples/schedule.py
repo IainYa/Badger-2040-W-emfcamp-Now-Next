@@ -31,6 +31,7 @@ curPage = Page.MAIN
     
 
 URL = "http://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-02T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+#URL = "http://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 display.connect()
 
