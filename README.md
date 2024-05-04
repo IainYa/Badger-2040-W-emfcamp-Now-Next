@@ -25,7 +25,7 @@ Once the 2024 schedule goes live, the offset will likely be different so the fak
 The `fake_epoch` portion of the query should be removed from the `URL` when using the app at EMF 2024 - unless you really want to pretend you're living in a different timezone!
 For live use, the URL should be defined as:
 
-`URL = "http://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C"`
+`URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C"`
 
 
 ## Sleep options

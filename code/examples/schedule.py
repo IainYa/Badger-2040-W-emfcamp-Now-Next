@@ -30,8 +30,8 @@ class Page():
 curPage = Page.MAIN
     
 
-URL = "http://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-02T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
-#URL = "http://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
+URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-02T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+#URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 display.connect()
 
@@ -50,57 +50,57 @@ def get_data():
     j = r.json()
     print("Data obtained!")
     try:
-        start = j["guide"]["Stage A"]["now"]["start_time"]
+        start = j["guide"]["Stage A"]["now"][0]["start_time"]
     except:
         nowA = "Nothing on Stage A"
     else:
-        end = j["guide"]["Stage A"]["now"]["end_time"]
-        nowA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["now"]["title"], j["guide"]["Stage A"]["now"]["speaker"])
+        end = j["guide"]["Stage A"]["now"][0]["end_time"]
+        nowA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["now"][0]["title"], j["guide"]["Stage A"]["now"][0]["speaker"])
     print (nowA)
     
     try:
-        start = j["guide"]["Stage A"]["next"]["start_time"]
+        start = j["guide"]["Stage A"]["next"][0]["start_time"]
     except:
         nextA = "Nothing on Stage A"
     else:
-        end = j["guide"]["Stage A"]["next"]["end_time"]
-        nextA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["next"]["title"], j["guide"]["Stage A"]["next"]["speaker"])
+        end = j["guide"]["Stage A"]["next"][0]["end_time"]
+        nextA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["next"][0]["title"], j["guide"]["Stage A"]["next"][0]["speaker"])
     print (nextA)
         
     try:
-        start = j["guide"]["Stage B"]["now"]["start_time"]
+        start = j["guide"]["Stage B"]["now"][0]["start_time"]
     except:
         nowB = "Nothing on Stage B"
     else:
-        end = j["guide"]["Stage B"]["now"]["end_time"]
-        nowB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["now"]["title"], j["guide"]["Stage B"]["now"]["speaker"])
+        end = j["guide"]["Stage B"]["now"][0]["end_time"]
+        nowB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["now"][0]["title"], j["guide"]["Stage B"]["now"][0]["speaker"])
     print (nowB)
     
     try:
-        start = j["guide"]["Stage B"]["next"]["start_time"]
+        start = j["guide"]["Stage B"]["next"][0]["start_time"]
     except:
         nextB = "Nothing on Stage B"
     else:
-        end = j["guide"]["Stage B"]["next"]["end_time"]
-        nextB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["next"]["title"], j["guide"]["Stage B"]["next"]["speaker"])
+        end = j["guide"]["Stage B"]["next"][0]["end_time"]
+        nextB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["next"][0]["title"], j["guide"]["Stage B"]["next"][0]["speaker"])
     print (nextB)
     
     try:
-        start = j["guide"]["Stage C"]["now"]["start_time"]
+        start = j["guide"]["Stage C"]["now"][0]["start_time"]
     except:
         nowC = "Nothing on Stage C"
     else:
-        end = j["guide"]["Stage C"]["now"]["end_time"]
-        nowC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["now"]["title"], j["guide"]["Stage C"]["now"]["speaker"])
+        end = j["guide"]["Stage C"]["now"][0]["end_time"]
+        nowC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["now"][0]["title"], j["guide"]["Stage C"]["now"][0]["speaker"])
     print (nowC)
     
     try:
-        start = j["guide"]["Stage C"]["next"]["start_time"]
+        start = j["guide"]["Stage C"]["next"][0]["start_time"]
     except:
         nextC = "Nothing on Stage C"
     else:
-        end = j["guide"]["Stage C"]["next"]["end_time"]
-        nextC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["next"]["title"], j["guide"]["Stage C"]["next"]["speaker"])
+        end = j["guide"]["Stage C"]["next"][0]["end_time"]
+        nextC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["next"][0]["title"], j["guide"]["Stage C"]["next"][0]["speaker"])
     print (nextC)
     
 
