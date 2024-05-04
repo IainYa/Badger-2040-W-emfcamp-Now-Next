@@ -30,7 +30,7 @@ class Page():
 curPage = Page.MAIN
     
 
-URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-02T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-03T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 display.connect()
@@ -173,7 +173,7 @@ def display_Stage(stage, nownext):
     display.set_font("bitmap14_outline")
     display.set_thickness(1)
     try:
-        a = j["guide"][stage][nownext]["start_time"] ####
+        a = j["guide"][stage][nownext][0]["start_time"] ####
     except:
         jpeg.open_file("/icons/icon-cryingTilda.jpg")
         jpeg.decode(178,10)
@@ -186,11 +186,11 @@ def display_Stage(stage, nownext):
     else:
         display.set_font("bitmap14_outline")
         display.set_thickness(2)
-        display.text("{} - {}".format(j["guide"][stage][nownext]["start_time"],j["guide"][stage][nownext]["end_time"]) , l, 15, scale=s1) ####
-        display.text(j["guide"][stage][nownext]["title"], l, 30, scale=s2)  ####
+        display.text("{} - {}".format(j["guide"][stage][nownext][0]["start_time"],j["guide"][stage][nownext][0]["end_time"]) , l, 15, scale=s1) ####
+        display.text(j["guide"][stage][nownext][0]["title"], l, 30, scale=s2)  ####
         display.set_font("bitmap8")
-        display.text(j["guide"][stage][nownext]["speaker"], l, 45, scale=1)  ####
-        desc = j["guide"][stage][nownext]["description"]
+        display.text(j["guide"][stage][nownext][0]["speaker"], l, 45, scale=1)  ####
+        desc = j["guide"][stage][nownext][0]["description"]
         while desc.rfind("\r\n\r\n") != -1:
             desc = desc.replace("\r\n\r\n", "\r\n")
         display.text(desc, l, 60, wordwrap=w-l, scale=1.5)
