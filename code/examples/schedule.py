@@ -1,7 +1,16 @@
 import time
 import badger2040
-import urequests
 import jpegdec
+
+isBadgerW = 1
+offline = 0
+
+try:
+    import urequests
+except:
+    isBadgerW = 0
+    offline = 1
+
 
 display = badger2040.Badger2040()
 jpeg = jpegdec.JPEG(display.display)
@@ -30,7 +39,7 @@ class Page():
 curPage = Page.MAIN
     
 
-URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-03T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-11T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 display.connect()
@@ -43,11 +52,16 @@ display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
 def get_data():
     global nowA, nextA, nowB, nextB, nowC, nextC, j
-    
+      
     req = URL
     print(f"Requesting URL: {req}")
-    r = urequests.get(req)
-    j = r.json()
+    if offline == 0:
+        r = urequests.get(req)
+        j = r.json()
+    else:
+        #Pass dummy json into j - to be replaced by json file
+        j = '{"now":"2024-05-12T12:31:25.877372296Z","guide":{"Stage C":{"now":[],"next":[]},"Stage B":{"now":[],"next":[]},"Stage A":{"now":[],"next":[]}}}'
+    
     print("Data obtained!")
     try:
         start = j["guide"]["Stage A"]["now"][0]["start_time"]
@@ -198,6 +212,7 @@ def display_Stage(stage, nownext):
     
 
 get_data()
+
 display_main()
 badger2040.reset_pressed_to_wake()
 
@@ -237,4 +252,8 @@ while True:
             display_Stage("Stage C", "now")
     
     if time.time() - lastPress > timeout:
-        badger2040.sleep_for(sleeptime)
+        print("Going to sleep now.")
+        if isBadgerW:
+            badger2040.sleep_for(sleeptime)
+        else:
+            badger2040.turn_off()
