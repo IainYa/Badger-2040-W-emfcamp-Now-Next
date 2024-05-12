@@ -42,7 +42,11 @@ curPage = Page.MAIN
 URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-11T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
-display.connect()
+if isBadgerW:
+    try:
+        display.connect()
+    except:
+        offline = 1
 
 display.set_pen(15)
 display.clear()
@@ -134,6 +138,8 @@ def display_main():
     display.set_pen(15)
     display.set_font("bitmap8")
     display.set_thickness(4)
+    if offline == 1:
+        display.text("OFFLINE" , 2, 2, scale=1)
     display.text("EMF - Now and Next - Main Stages" , 50, 2, scale=1)
     
     s = 1.3
@@ -172,6 +178,8 @@ def display_Stage(stage, nownext):
     display.set_pen(15)
     display.set_font("bitmap8")
     display.set_thickness(4)
+    if offline == 1:
+        display.text("OFFLINE" , 2, 2, scale=1)
     display.text("EMF - {} - {}".format(nownext, stage) , 50, 2, scale=1) ####
     
     s = 1.3
