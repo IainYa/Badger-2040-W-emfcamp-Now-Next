@@ -258,7 +258,7 @@ while True:
     
     if time.time() - lastPress > timeout:
         print("Going to sleep now.")
-        if isBadgerW:
+        if badger2040.is_wireless():
             badger2040.sleep_for(sleeptime)
         else:
             badger2040.turn_off()
