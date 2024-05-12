@@ -2,15 +2,12 @@ import time
 import badger2040
 import jpegdec
 
-isBadgerW = 1
 offline = 0
 
-try:
+if badger2040.is_wireless():
     import urequests
-except:
-    isBadgerW = 0
+else:
     offline = 1
-
 
 display = badger2040.Badger2040()
 jpeg = jpegdec.JPEG(display.display)
@@ -42,7 +39,7 @@ curPage = Page.MAIN
 URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-11T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
-if isBadgerW:
+if badger2040.is_wireless():
     try:
         display.connect()
     except:
