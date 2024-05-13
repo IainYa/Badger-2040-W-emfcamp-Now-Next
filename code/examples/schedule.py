@@ -65,56 +65,56 @@ def get_data():
     
     print("Data obtained!")
     try:
-        start = j["guide"]["Stage A"]["now"][0]["start_time"]
+        start = j["guide"]["Stage A"]["now"][0]["start_date"][11:16]
     except:
         nowA = "Nothing on Stage A"
     else:
-        end = j["guide"]["Stage A"]["now"][0]["end_time"]
+        end = j["guide"]["Stage A"]["now"][0]["end_date"][11:16]
         nowA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["now"][0]["title"], j["guide"]["Stage A"]["now"][0]["speaker"])
     print (nowA)
     
     try:
-        start = j["guide"]["Stage A"]["next"][0]["start_time"]
+        start = j["guide"]["Stage A"]["next"][0]["start_date"][11:16]
     except:
         nextA = "Nothing on Stage A"
     else:
-        end = j["guide"]["Stage A"]["next"][0]["end_time"]
+        end = j["guide"]["Stage A"]["next"][0]["end_date"][11:16]
         nextA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["next"][0]["title"], j["guide"]["Stage A"]["next"][0]["speaker"])
     print (nextA)
         
     try:
-        start = j["guide"]["Stage B"]["now"][0]["start_time"]
+        start = j["guide"]["Stage B"]["now"][0]["start_date"][11:16]
     except:
         nowB = "Nothing on Stage B"
     else:
-        end = j["guide"]["Stage B"]["now"][0]["end_time"]
+        end = j["guide"]["Stage B"]["now"][0]["end_date"][11:16]
         nowB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["now"][0]["title"], j["guide"]["Stage B"]["now"][0]["speaker"])
     print (nowB)
     
     try:
-        start = j["guide"]["Stage B"]["next"][0]["start_time"]
+        start = j["guide"]["Stage B"]["next"][0]["start_date"][11:16]
     except:
         nextB = "Nothing on Stage B"
     else:
-        end = j["guide"]["Stage B"]["next"][0]["end_time"]
+        end = j["guide"]["Stage B"]["next"][0]["end_date"][11:16]
         nextB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["next"][0]["title"], j["guide"]["Stage B"]["next"][0]["speaker"])
     print (nextB)
     
     try:
-        start = j["guide"]["Stage C"]["now"][0]["start_time"]
+        start = j["guide"]["Stage C"]["now"][0]["start_date"][11:16]
     except:
         nowC = "Nothing on Stage C"
     else:
-        end = j["guide"]["Stage C"]["now"][0]["end_time"]
+        end = j["guide"]["Stage C"]["now"][0]["end_date"][11:16]
         nowC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["now"][0]["title"], j["guide"]["Stage C"]["now"][0]["speaker"])
     print (nowC)
     
     try:
-        start = j["guide"]["Stage C"]["next"][0]["start_time"]
+        start = j["guide"]["Stage C"]["next"][0]["start_date"][11:16]
     except:
         nextC = "Nothing on Stage C"
     else:
-        end = j["guide"]["Stage C"]["next"][0]["end_time"]
+        end = j["guide"]["Stage C"]["next"][0]["end_date"][11:16]
         nextC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["next"][0]["title"], j["guide"]["Stage C"]["next"][0]["speaker"])
     print (nextC)
     
@@ -192,7 +192,7 @@ def display_Stage(stage, nownext):
     display.set_font("bitmap14_outline")
     display.set_thickness(1)
     try:
-        a = j["guide"][stage][nownext][0]["start_time"] ####
+        a = j["guide"][stage][nownext][0]["start_date"] ####
     except:
         jpeg.open_file("/icons/icon-cryingTilda.jpg")
         jpeg.decode(178,10)
@@ -205,7 +205,7 @@ def display_Stage(stage, nownext):
     else:
         display.set_font("bitmap14_outline")
         display.set_thickness(2)
-        display.text("{} - {}".format(j["guide"][stage][nownext][0]["start_time"],j["guide"][stage][nownext][0]["end_time"]) , l, 15, scale=s1) ####
+        display.text("{} - {}".format(j["guide"][stage][nownext][0]["start_date"][11:16],j["guide"][stage][nownext][0]["end_date"][11:16]) , l, 15, scale=s1) ####
         display.text(j["guide"][stage][nownext][0]["title"], l, 30, scale=s2)  ####
         display.set_font("bitmap8")
         display.text(j["guide"][stage][nownext][0]["speaker"], l, 45, scale=1)  ####
