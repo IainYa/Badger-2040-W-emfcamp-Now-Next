@@ -1,5 +1,6 @@
 import time
 import badger2040
+import badger_os
 import jpegdec
 
 offline = 0
@@ -9,8 +10,15 @@ if badger2040.is_wireless():
 else:
     offline = 1
 
+state = {
+    "display_time": "2022-06-02 21:00:00"
+}
+
+
 display = badger2040.Badger2040()
 jpeg = jpegdec.JPEG(display.display)
+
+badger_os.state_load("schedule", state)
 
 display.led(255)
 
@@ -34,9 +42,26 @@ class Page():
     NEXTC = 6
 
 curPage = Page.MAIN
+
+class Event():
+    def __init__(self, venue, nownext):
+        self.venue = venue
+        self.nownext = nownext
+        self.start_date = ""
+        self.end_date = ""
+        self.title = ""
+        self.speaker = ""
+        self.description = ""
+
+EventNowA = Event("Stage A", "now")
+EventNextA = Event("Stage A", "next")
+EventNowB = Event("Stage B", "now")
+EventNextB = Event("Stage B", "next")
+EventNowC = Event("Stage C", "now")
+EventNextC = Event("Stage C", "next")
     
 
-URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-11T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-16T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 if badger2040.is_wireless():
@@ -51,6 +76,7 @@ display.set_pen(0)
 
 display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
+        
 def get_data():
     global nowA, nextA, nowB, nextB, nowC, nextC, j
       
@@ -59,64 +85,123 @@ def get_data():
     if offline == 0:
         r = urequests.get(req)
         j = r.json()
-    else:
-        #Pass dummy json into j - to be replaced by json file
-        j = '{"now":"2024-05-12T12:31:25.877372296Z","guide":{"Stage C":{"now":[],"next":[]},"Stage B":{"now":[],"next":[]},"Stage A":{"now":[],"next":[]}}}'
-    
-    print("Data obtained!")
-    try:
-        start = j["guide"]["Stage A"]["now"][0]["start_date"][11:16]
-    except:
-        nowA = "Nothing on Stage A"
-    else:
-        end = j["guide"]["Stage A"]["now"][0]["end_date"][11:16]
-        nowA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["now"][0]["title"], j["guide"]["Stage A"]["now"][0]["speaker"])
-    print (nowA)
-    
-    try:
-        start = j["guide"]["Stage A"]["next"][0]["start_date"][11:16]
-    except:
-        nextA = "Nothing on Stage A"
-    else:
-        end = j["guide"]["Stage A"]["next"][0]["end_date"][11:16]
-        nextA = "{} {} - {} ".format(start, j["guide"]["Stage A"]["next"][0]["title"], j["guide"]["Stage A"]["next"][0]["speaker"])
-    print (nextA)
         
-    try:
-        start = j["guide"]["Stage B"]["now"][0]["start_date"][11:16]
-    except:
-        nowB = "Nothing on Stage B"
+        print("Data obtained!")
+        try:
+            start = j["guide"]["Stage A"]["now"][0]["start_date"][11:16]
+        except:
+            EventNowA.start_date = ""
+            EventNowA.end_date = ""
+            EventNowA.title = ""
+            EventNowA.speaker = ""
+            EventNowA.description = ""
+            nowA = "Nothing on Stage A"
+        else:
+            EventNowA.start_date = j["guide"]["Stage A"]["now"][0]["start_date"]
+            EventNowA.end_date = j["guide"]["Stage A"]["now"][0]["end_date"]
+            EventNowA.title = j["guide"]["Stage A"]["now"][0]["title"]
+            EventNowA.speaker = j["guide"]["Stage A"]["now"][0]["speaker"]
+            EventNowA.description = j["guide"]["Stage A"]["now"][0]["description"]
+            nowA = "{} {} - {} ".format(EventNowA.start_date[11:16], EventNowA.title, EventNowA.speaker)
+        print (nowA)
+        
+        try:
+            start = j["guide"]["Stage A"]["next"][0]["start_date"][11:16]
+        except:
+            EventNextA.start_date = ""
+            EventNextA.end_date = ""
+            EventNextA.title = ""
+            EventNextA.speaker = ""
+            EventNextA.description = ""
+            nextA = "Nothing on Stage A"
+        else:
+            EventNextA.start_date = j["guide"]["Stage A"]["next"][0]["start_date"]
+            EventNextA.end_date = j["guide"]["Stage A"]["next"][0]["end_date"]
+            EventNextA.title = j["guide"]["Stage A"]["next"][0]["title"]
+            EventNextA.speaker = j["guide"]["Stage A"]["next"][0]["speaker"]
+            EventNextA.description = j["guide"]["Stage A"]["next"][0]["description"]
+            nextA = "{} {} - {} ".format(EventNextA.start_date[11:16], EventNextA.title, EventNextA.speaker)
+        print (nextA)
+            
+        try:
+            start = j["guide"]["Stage B"]["now"][0]["start_date"][11:16]
+        except:
+            EventNowB.start_date = ""
+            EventNowB.end_date = ""
+            EventNowB.title = ""
+            EventNowB.speaker = ""
+            EventNowB.description = ""
+            nowB = "Nothing on Stage B"
+        else:
+            EventNowB.start_date = j["guide"]["Stage B"]["now"][0]["start_date"]
+            EventNowB.end_date = j["guide"]["Stage B"]["now"][0]["end_date"]
+            EventNowB.title = j["guide"]["Stage B"]["now"][0]["title"]
+            EventNowB.speaker = j["guide"]["Stage B"]["now"][0]["speaker"]
+            EventNowB.description = j["guide"]["Stage B"]["now"][0]["description"]
+            nowB = "{} {} - {} ".format(EventNowB.start_date[11:16], EventNowB.title, EventNowB.speaker)
+        print (nowB)
+        
+        try:
+            start = j["guide"]["Stage B"]["next"][0]["start_date"][11:16]
+        except:
+            EventNextB.start_date = ""
+            EventNextB.end_date = ""
+            EventNextB.title = ""
+            EventNextB.speaker = ""
+            EventNextB.description = ""
+            nextB = "Nothing on Stage B"
+        else:
+            EventNextB.start_date = j["guide"]["Stage B"]["next"][0]["start_date"]
+            EventNextB.end_date = j["guide"]["Stage B"]["next"][0]["end_date"]
+            EventNextB.title = j["guide"]["Stage B"]["next"][0]["title"]
+            EventNextB.speaker = j["guide"]["Stage B"]["next"][0]["speaker"]
+            EventNextB.description = j["guide"]["Stage B"]["next"][0]["description"]
+            nextB = "{} {} - {} ".format(EventNextB.start_date[11:16], EventNextB.title, EventNextB.speaker)
+        print (nextB)
+        
+        try:
+            start = j["guide"]["Stage C"]["now"][0]["start_date"][11:16]
+        except:
+            EventNowC.start_date = ""
+            EventNowC.end_date = ""
+            EventNowC.title = ""
+            EventNowC.speaker = ""
+            EventNowC.description = ""
+            nowC = "Nothing on Stage C"
+        else:
+            EventNowC.start_date = j["guide"]["Stage C"]["now"][0]["start_date"]
+            EventNowC.end_date = j["guide"]["Stage C"]["now"][0]["end_date"]
+            EventNowC.title = j["guide"]["Stage C"]["now"][0]["title"]
+            EventNowC.speaker = j["guide"]["Stage C"]["now"][0]["speaker"]
+            EventNowC.description = j["guide"]["Stage C"]["now"][0]["description"]
+            nowC = "{} {} - {} ".format(EventNowC.start_date[11:16], EventNowC.title, EventNowC.speaker)
+        print (nowC)
+        
+        try:
+            start = j["guide"]["Stage C"]["next"][0]["start_date"][11:16]
+        except:
+            EventNextC.start_date = ""
+            EventNextC.end_date = ""
+            EventNextC.title = ""
+            EventNextC.speaker = ""
+            EventNextC.description = ""
+            nextC = "Nothing on Stage C"
+        else:
+            EventNextC.start_date = j["guide"]["Stage C"]["next"][0]["start_date"]
+            EventNextC.end_date = j["guide"]["Stage C"]["next"][0]["end_date"]
+            EventNextC.title = j["guide"]["Stage C"]["next"][0]["title"]
+            EventNextC.speaker = j["guide"]["Stage C"]["next"][0]["speaker"]
+            EventNextC.description = j["guide"]["Stage C"]["next"][0]["description"]
+            nextC = "{} {} - {} ".format(EventNextC.start_date[11:16], EventNextC.title, EventNextC.speaker)
+        print (nextC)
+        
     else:
-        end = j["guide"]["Stage B"]["now"][0]["end_date"][11:16]
-        nowB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["now"][0]["title"], j["guide"]["Stage B"]["now"][0]["speaker"])
-    print (nowB)
-    
-    try:
-        start = j["guide"]["Stage B"]["next"][0]["start_date"][11:16]
-    except:
-        nextB = "Nothing on Stage B"
-    else:
-        end = j["guide"]["Stage B"]["next"][0]["end_date"][11:16]
-        nextB = "{} {} - {} ".format(start, j["guide"]["Stage B"]["next"][0]["title"], j["guide"]["Stage B"]["next"][0]["speaker"])
-    print (nextB)
-    
-    try:
-        start = j["guide"]["Stage C"]["now"][0]["start_date"][11:16]
-    except:
-        nowC = "Nothing on Stage C"
-    else:
-        end = j["guide"]["Stage C"]["now"][0]["end_date"][11:16]
-        nowC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["now"][0]["title"], j["guide"]["Stage C"]["now"][0]["speaker"])
-    print (nowC)
-    
-    try:
-        start = j["guide"]["Stage C"]["next"][0]["start_date"][11:16]
-    except:
-        nextC = "Nothing on Stage C"
-    else:
-        end = j["guide"]["Stage C"]["next"][0]["end_date"][11:16]
-        nextC = "{} {} - {} ".format(start, j["guide"]["Stage C"]["next"][0]["title"], j["guide"]["Stage C"]["next"][0]["speaker"])
-    print (nextC)
+        nowA="Test"
+        
+
+def get_offline_data():
+    a = 1
+
     
 
 def display_main():
@@ -162,7 +247,7 @@ def display_main():
     display.update()
 
 
-def display_Stage(stage, nownext):
+def display_Stage(event):
     
     w, h = display.get_bounds()
     
@@ -177,13 +262,13 @@ def display_Stage(stage, nownext):
     display.set_thickness(4)
     if offline == 1:
         display.text("OFFLINE" , 2, 2, scale=1)
-    display.text("EMF - {} - {}".format(nownext, stage) , 50, 2, scale=1) ####
+    display.text("EMF - {} - {}".format(event.nownext, event.venue) , 50, 2, scale=1) ####
     
     s = 1.3
     display.set_pen(15)
     display.set_font("sans")
     display.set_thickness(4)
-    display.text(stage.replace("Stage ", "") , 0, 70, scale=s) ####
+    display.text(event.venue.replace("Stage ", "") , 0, 70, scale=s) ####
 
     s1 = 0.5
     s2 = 0.4
@@ -191,32 +276,32 @@ def display_Stage(stage, nownext):
     display.set_pen(0)
     display.set_font("bitmap14_outline")
     display.set_thickness(1)
-    try:
-        a = j["guide"][stage][nownext][0]["start_date"] ####
-    except:
+    if event.start_date == "":
         jpeg.open_file("/icons/icon-cryingTilda.jpg")
         jpeg.decode(178,10)
         display.set_pen(0)
         display.set_font("sans")
         display.set_thickness(2)
         display.text("Nothing", l, 50, scale=1.2 )
-        display.text("{}".format(nownext), l, 85, scale=1.2 )
-        
+        display.text("{}".format(event.nownext), l, 85, scale=1.2 )
     else:
         display.set_font("bitmap14_outline")
         display.set_thickness(2)
-        display.text("{} - {}".format(j["guide"][stage][nownext][0]["start_date"][11:16],j["guide"][stage][nownext][0]["end_date"][11:16]) , l, 15, scale=s1) ####
-        display.text(j["guide"][stage][nownext][0]["title"], l, 30, scale=s2)  ####
+        display.text("{} - {}".format(event.start_date[11:16],event.end_date[11:16]) , l, 15, scale=s1) ####
+        display.text(event.title, l, 30, scale=s2)  ####
         display.set_font("bitmap8")
-        display.text(j["guide"][stage][nownext][0]["speaker"], l, 45, scale=1)  ####
-        desc = j["guide"][stage][nownext][0]["description"]
+        display.text(event.speaker, l, 45, scale=1)  ####
+        desc = event.description
         while desc.rfind("\r\n\r\n") != -1:
             desc = desc.replace("\r\n\r\n", "\r\n")
         display.text(desc, l, 60, wordwrap=w-l, scale=1.5)
     display.update()
-    
 
-get_data()
+    
+if offline ==0:
+    get_data()
+else:
+    get_offline_data()
 
 display_main()
 badger2040.reset_pressed_to_wake()
@@ -233,28 +318,28 @@ while True:
         lastPress = time.time()
         if curPage == Page.NOWA:
             curPage = Page.NEXTA
-            display_Stage("Stage A", "next")
+            display_Stage(EventNextA)
         else:
             curPage = Page.NOWA
-            display_Stage("Stage A", "now")
+            display_Stage(EventNowA)
             
     if display.pressed(badger2040.BUTTON_B):
         lastPress = time.time()
         if curPage == Page.NOWB:
             curPage = Page.NEXTB
-            display_Stage("Stage B", "next")
+            display_Stage(EventNextB)
         else:
             curPage = Page.NOWB
-            display_Stage("Stage B", "now")
+            display_Stage(EventNowB)
             
     if display.pressed(badger2040.BUTTON_C):
         lastPress = time.time()
         if curPage == Page.NOWC:
             curPage = Page.NEXTC
-            display_Stage("Stage C", "next")
+            display_Stage(EventNextC)
         else:
             curPage = Page.NOWC
-            display_Stage("Stage C", "now")
+            display_Stage(EventNowC)
     
     if time.time() - lastPress > timeout:
         print("Going to sleep now.")
