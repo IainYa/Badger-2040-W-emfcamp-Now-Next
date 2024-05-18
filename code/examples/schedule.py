@@ -66,9 +66,6 @@ EventNowC = Event("Stage C", "now")
 EventNextC = Event("Stage C", "next")
     
 
-URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-16T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
-#URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
-
 if badger2040.is_wireless():
     try:
         display.connect()
