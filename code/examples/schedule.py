@@ -2,6 +2,10 @@ import time
 import badger2040
 import badger_os
 import jpegdec
+import json
+
+URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-16T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+#URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 offline = 0
 
@@ -11,7 +15,7 @@ else:
     offline = 1
 
 state = {
-    "display_time": "2022-06-02 21:00:00"
+    "display_time": "2022-06-03 10:15:00"
 }
 
 
@@ -47,6 +51,7 @@ class Event():
     def __init__(self, venue, nownext):
         self.venue = venue
         self.nownext = nownext
+        self.prev_start = ""
         self.start_date = ""
         self.end_date = ""
         self.title = ""
@@ -76,10 +81,10 @@ display.set_pen(0)
 
 display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
-        
+
 def get_data():
-    global nowA, nextA, nowB, nextB, nowC, nextC, j
-      
+    global nowA, nextA, nowB, nextB, nowC, nextC
+    
     req = URL
     print(f"Requesting URL: {req}")
     if offline == 0:
@@ -194,14 +199,83 @@ def get_data():
             EventNextC.description = j["guide"]["Stage C"]["next"][0]["description"]
             nextC = "{} {} - {} ".format(EventNextC.start_date[11:16], EventNextC.title, EventNextC.speaker)
         print (nextC)
+
+
+def get_events(venue, eventNow, eventNext):
+    global state
         
+    with open("/schedule/static-schedule.json") as f:
+        j = json.load(f)
+    
+    if state["display_time"] == "":
+        print("Display time not set")
+        state["display_time"]= j[0]["start_date"]
+        badger_os.state_save("schedule", state)
+    
+    eventNow.start_date = ""
+    eventNext.start_date = ""
+    
+    for event in j:
+        if event["venue"] == venue:
+            if event["end_date"] < state["display_time"]:
+                eventNow.prev_start = event["start_date"]
+            if event["start_date"] <= state["display_time"] and state["display_time"] < event["end_date"]:
+                if eventNow.prev_start == "" and event["end_date"] < state["display_time"]:
+                    eventNow.prev_start = event["start_date"]
+                eventNow.start_date = event["start_date"]
+                eventNow.end_date = event["end_date"]
+                eventNow.title = event["title"]
+                eventNow.speaker = event["speaker"]
+                eventNow.description = event["description"]
+            if event["start_date"] > state["display_time"]:
+                eventNext.start_date = event["start_date"]
+                eventNext.end_date = event["end_date"]
+                eventNext.title = event["title"]
+                eventNext.speaker = event["speaker"]
+                eventNext.description = event["description"]
+                break
+        
+    
+
+def get_local_data():
+    global nowA, nextA, nowB, nextB, nowC, nextC, prev_time, next_time
+    
+    get_events("Stage A", EventNowA, EventNextA)
+    if EventNowA.start_date == "":
+        nowA = "Nothing on Stage A"
     else:
-        nowA="Test"
-        
-
-def get_offline_data():
-    a = 1
-
+        nowA = "{} {} - {} ".format(EventNowA.start_date[11:16], EventNowA.title, EventNowA.speaker)
+    if EventNextA.start_date == "":
+        nextA = "Nothing on Stage A"
+    else:
+        nextA = "{} {} - {} ".format(EventNextA.start_date[11:16], EventNextA.title, EventNextA.speaker)
+    
+    get_events("Stage B", EventNowB, EventNextB)
+    if EventNowB.start_date == "":
+        nowB = "Nothing on Stage B"
+    else:
+        nowB = "{} {} - {} ".format(EventNowB.start_date[11:16], EventNowB.title, EventNowB.speaker)
+    if EventNextB.start_date == "":
+        nextB = "Nothing on Stage B"
+    else:
+        nextB = "{} {} - {} ".format(EventNextB.start_date[11:16], EventNextB.title, EventNextB.speaker)
+    
+    get_events("Stage C", EventNowC, EventNextC)
+    if EventNowC.start_date == "":
+        nowC = "Nothing on Stage C"
+    else:
+        nowC = "{} {} - {} ".format(EventNowC.start_date[11:16], EventNowC.title, EventNowC.speaker)
+    if EventNextC.start_date == "":
+        nextC = "Nothing on Stage C"
+    else:
+        nextC = "{} {} - {} ".format(EventNextC.start_date[11:16], EventNextC.title, EventNextC.speaker)
+    
+    prev_time = max(EventNowA.prev_start, EventNowB.prev_start, EventNowC.prev_start)
+    next_time = min(EventNextA.start_date, EventNextB.start_date, EventNextC.start_date)
+    print("{} {} {} ".format(EventNowA.prev_start, EventNowB.prev_start, EventNowC.prev_start))
+    print("Prev time: {}".format(prev_time))
+    print("{} {} {} ".format(EventNextA.start_date, EventNextB.start_date, EventNextC.start_date))
+    print("Next time: {}".format(next_time))
     
 
 def display_main():
@@ -223,6 +297,7 @@ def display_main():
     if offline == 1:
         display.text("OFFLINE" , 2, 2, scale=1)
     display.text("EMF - Now and Next - Main Stages" , 50, 2, scale=1)
+    display.text(state["display_time"][11:16], 270, 2, scale=1)
     
     s = 1.3
     display.set_pen(15)
@@ -282,7 +357,7 @@ def display_Stage(event):
         display.set_pen(0)
         display.set_font("sans")
         display.set_thickness(2)
-        display.text("Nothing", l, 50, scale=1.2 )
+        display.text("Nothing", l, 50, scale=1.2)
         display.text("{}".format(event.nownext), l, 85, scale=1.2 )
     else:
         display.set_font("bitmap14_outline")
@@ -298,10 +373,10 @@ def display_Stage(event):
     display.update()
 
     
-if offline ==0:
+if offline == 0:
     get_data()
 else:
-    get_offline_data()
+    get_local_data()
 
 display_main()
 badger2040.reset_pressed_to_wake()
@@ -311,9 +386,25 @@ while True:
         lastPress = time.time()
         if curPage != Page.MAIN:
             display_main()
+        else:
+            if offline == 1:
+                state["display_time"] = prev_time
+                badger_os.state_save("schedule", state)
+                print(state["display_time"])
+                get_local_data()
+                display_main()
     if display.pressed(badger2040.BUTTON_DOWN):
-        get_data()
-        display_main()
+        lastPress = time.time()
+        if offline == 1:
+            state["display_time"] = next_time
+            badger_os.state_save("schedule", state)
+            print("down")
+            print(state["display_time"])
+            get_local_data()
+            display_main()
+        else:
+            get_data()
+            display_main()
     if display.pressed(badger2040.BUTTON_A):
         lastPress = time.time()
         if curPage == Page.NOWA:
