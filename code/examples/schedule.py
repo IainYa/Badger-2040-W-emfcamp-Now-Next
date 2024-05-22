@@ -5,8 +5,8 @@ import jpegdec
 import json
 
 
-URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-21T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C" # For testing with the 2022 schedule
-#URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
+#URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-21T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C" # For testing with the 2022 schedule
+URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 offline = 0
 
@@ -81,14 +81,20 @@ display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
 
 def get_data():
-    global nowA, nextA, nowB, nextB, nowC, nextC, state
+    global nowA, nextA, nowB, nextB, nowC, nextC, state, offline
     
     req = URL
     print(f"Requesting URL: {req}")
     if offline == 0:
-        r = urequests.get(req)
-        j = r.json()
-        
+        try:
+            r = urequests.get(req)
+            j = r.json()
+        except:
+            print("Error retrieving JSON")
+            offline = 1
+            get_local_data()
+            display_main()
+            return
         print("Data obtained!")
         try:
             tstr = j["now"]     
@@ -221,6 +227,10 @@ def get_events(venue, eventNow, eventNext):
     
     if state["display_time"] == "":
         print("Display time not set")
+        state["display_time"]= j[0]["start_date"]
+        badger_os.state_save("schedule", state)
+    if state["display_time"] < j[0]["start_date"]:
+        print("Display time set to first event")
         state["display_time"]= j[0]["start_date"]
         badger_os.state_save("schedule", state)
     
