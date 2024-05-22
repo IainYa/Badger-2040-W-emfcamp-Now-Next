@@ -1,19 +1,26 @@
-# Badger-2040-W-emfcamp-Now-Next
-An app for the Badger 2040 W to display Now/Next info for the main stages at EMF2024.  Intended to be copied into the Badger OS that ships with the badge.
+# Badger-2040-emfcamp-Now-Next
+An app for the Badger 2040 (Original and W versions) to display Now/Next info for the main stages at EMF2024.  Intended to be copied into the Badger OS that ships with the badge.
+
+The app should work on both versions of the badge.  The app checks the version of the badge and uses a local copy of the schedule if WiFi is not available.
 
 This app uses an adapter for the EMF API which can be found here:  https://github.com/DanNixon/emfcamp-schedule-api/tree/main/adapter
 The adapter allows for testing by including a fake_epoch which offsets the schedule accordingly.  Thanks Dan! :-)
 
-**N.B. This is all subject to change as the 2024 schedule has not been released yet.  Some changes are likely.**
+**N.B. This is all subject to change as the 2024 schedule has not been released yet.  Some changes are likely and there may be updates up to the start of the event and potentially during.**
 
 ![Main page showing now and next](/photos/Main.jpg)
 
 # Installation
 Copy the files from the Code folder into the Badger OS firmware folder structure.
 
+# Setup for offline use.
+No additional setup is required.
+
+## Optionally:
+  The `static_schedule.json` file can be manually updated by running the `make_static_schedule.py` script which can be found in the prebuild folder.
 
 # Setup
-WiFi is required so the app assumes you've already set up the WIFI_CONFIG.py file on the badge.
+WiFi is required for calls to the  so the app assumes you've already set up the WIFI_CONFIG.py file on the badge.
 
 
 ## fake_epoch for testing
