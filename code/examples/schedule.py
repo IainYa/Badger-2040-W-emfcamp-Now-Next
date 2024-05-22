@@ -4,7 +4,8 @@ import badger_os
 import jpegdec
 import json
 
-URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-16T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C"
+
+URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-21T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C" # For testing with the 2022 schedule
 #URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
 offline = 0
@@ -80,7 +81,7 @@ display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
 
 def get_data():
-    global nowA, nextA, nowB, nextB, nowC, nextC
+    global nowA, nextA, nowB, nextB, nowC, nextC, state
     
     req = URL
     print(f"Requesting URL: {req}")
@@ -89,6 +90,20 @@ def get_data():
         j = r.json()
         
         print("Data obtained!")
+        try:
+            tstr = j["now"]     
+        except:
+            print("API Time not available.")
+        else:
+            print("Time from API: {}".format(tstr))
+            ttup = (int(tstr[0:4]), int(tstr[5:7]), int(tstr[8:10]), int(tstr[11:13]), int(tstr[14:16]), int(tstr[17:19]), 0, 0)
+            print(ttup)
+            t = time.mktime(ttup) + 3600 # Adding 1 hour for BST
+            print(t)
+            print(time.localtime(t))
+            tstr = "{}-{}-{}T{}:{}:{}+01:00".format(time.localtime(t)[0], f"{time.localtime(t)[1]:02d}", f"{time.localtime(t)[2]:02d}", f"{time.localtime(t)[3]:02d}", f"{time.localtime(t)[4]:02d}", f"{time.localtime(t)[5]:02d}")
+            print(tstr)
+            state["display_time"] = tstr
         try:
             start = j["guide"]["Stage A"]["now"][0]["start_date"][11:16]
         except:
@@ -209,6 +224,7 @@ def get_events(venue, eventNow, eventNext):
         state["display_time"]= j[0]["start_date"]
         badger_os.state_save("schedule", state)
     
+    eventNow.prev_start = ""
     eventNow.start_date = ""
     eventNext.start_date = ""
     
@@ -217,6 +233,8 @@ def get_events(venue, eventNow, eventNext):
             if event["end_date"] < state["display_time"]:
                 eventNow.prev_start = event["start_date"]
             if event["start_date"] <= state["display_time"] and state["display_time"] < event["end_date"]:
+                if event["start_date"] < state["display_time"]:
+                    eventNow.prev_start = event["start_date"]
                 if eventNow.prev_start == "" and event["end_date"] < state["display_time"]:
                     eventNow.prev_start = event["start_date"]
                 eventNow.start_date = event["start_date"]
