@@ -4,12 +4,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build image
+  update-static-schedule:
+    name: Update Static Schedule
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - run: |
-          python3 ./prebuild/make_static_schedule.py
+          cd prebuild && python3 ./make_static_schedule.py
+
+      - name: Commit and push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
