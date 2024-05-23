@@ -1,5 +1,5 @@
 # Badger-2040-emfcamp-Now-Next
-An app for the Badger 2040 (Original and W versions) to display Now/Next info for the main stages at EMF2024.  Intended to be copied into the Badger OS that ships with the badge.
+An app for the Badger 2040 (Original and W versions) to display Now/Next info for the main stages at EMF2024 (www.emfcamp.org).  Intended to be copied into the Badger OS that ships with the badge.
 
 The app should work on both versions of the badge.  The app checks the version of the badge and uses a local copy of the schedule if WiFi is not available.
 
@@ -13,15 +13,20 @@ The adapter allows for testing by including a fake_epoch which offsets the sched
 # Installation
 Copy the files from the Code folder into the Badger OS firmware folder structure.
 
-# Setup for offline use.
+# Setup for Badger 2040 (non-W).
 No additional setup is required.
 
 ## Optionally:
-  The `static_schedule.json` file can be manually updated by running the `make_static_schedule.py` script which can be found in the prebuild folder.
+There is an action set up to refresh the static schedule file in this repository so you should just need to grab a new copy if you need to update it.
+If necessary, the `static_schedule.json` file can be manually updated by running the `make_static_schedule.py` script which can be found in the prebuild folder.
 
-# Setup
-WiFi is required for calls to the  so the app assumes you've already set up the WIFI_CONFIG.py file on the badge.
 
+# Setup for Badger 2040 W
+WiFi is required for calls to the API so the app assumes you've already set up the WIFI_CONFIG.py file on the badge.
+
+If refreshing over WiFi is problematic, un-comment The following line(#15) near the start of schedule.py
+
+`#offline = 1  # Un-Comment this line to force the Badger 2040 W into offline mode.`
 
 ## fake_epoch for testing
 In schedule.py, there is a variable called URL which includes the `fake_epoch` value.  The date and time should be set to something within the last couple of days for testing.  At EMF 2022, the first event in the schedule was at 10:00AM, the day before the opening ceremony so if you set the fake_epoch to yesterday at 10:00AM, it will be like reliving the first day of EMF 2022!
@@ -36,17 +41,19 @@ For live use, the URL should be defined as:
 
 
 ## Sleep options
-If no buttons are pressed for a certain time, the badge will go to sleep and wake up periodically to refresh, update the screen and go back to sleep again.  If a button is pressed then the badge will wake up and refresh straight away.
+If no buttons are pressed for a certain time, the badge will go to sleep.  The Badger 2040 W will wake up periodically to refresh, update the screen and go back to sleep again. (The Badger 2040 will just go to sleep.)  If a button is pressed then the badge will wake up and refresh straight away.
 
 The `sleeptime` variable sets the time between updates.
 
 The `timeout` variable defines how quickly the badge goes to sleep.  By default, this is 10 seconds when waking up to refresh or 30 seconds if woken up by a button press.
 
-These values should be edited in the code if you wish to change them.
+These values should be edited in `schedule.py` if you wish to change them.
 
 
 # Usage
-When the app starts or wakes up, it will connect to WiFi and retrieve the Now and Next events for Stages A, B and C.  It will then display the main page with an overview of all three stages.
+When the app starts or wakes up, it will check the version of the badge, connect to WiFi if possible and display the Now and Next events for Stages A, B and C.
+
+If the app is able to connect to the API, it will show the live schedule information.  If not, it will show the information from a local copy of the data, based on the last time it was used.  The last refresh time or offline display time will be displayed in the top right corner of the screen.
 
 Pressing `BUTTON_A`, `BUTTON_B` or `BUTTON_C` will open the details for the "now" event on the respective stage.  Pressing the same button again will open the details for the "next" event on that Stage.  Subsequent presses will toggle between "now" and "next".
 
@@ -54,4 +61,9 @@ Pressing `BUTTON_UP` will go back to the main page.
 
 Pressing `BUTTON_DOWN` will refresh the data and go back to the main page.
 
-The LED indicates whether the app is running or the badge is sleeping.
+The LED indicates that the app is running and is off while the badge is sleeping.
+
+## Offline mode
+Offline mode is indicated in the top left corner of the screen.  While offline, you can use `BUTTON_UP` and `BUTTON_DOWN` on the main page to navigate through the schedule, moving back and forth between the distinct event start times.
+
+Because the EMF schedule is so vast and wonderful, the long descriptions in the detailed view of the events are reduced to the first 255 characters to make it fit in the badge's storage.
