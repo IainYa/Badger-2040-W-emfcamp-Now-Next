@@ -12,6 +12,7 @@ offline = 0
 
 if badger2040.is_wireless():
     import urequests
+    #offline = 1  # Un-Comment this line to force the Badger 2040 W into offline mode.
 else:
     offline = 1
 
