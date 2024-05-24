@@ -24,9 +24,6 @@ If necessary, the `static_schedule.json` file can be manually updated by running
 # Setup for Badger 2040 W
 WiFi is required for calls to the API so the app assumes you've already set up the WIFI_CONFIG.py file on the badge.
 
-If refreshing over WiFi is problematic, un-comment The following line(#15) near the start of schedule.py
-
-`#offline = 1  # Un-Comment this line to force the Badger 2040 W into offline mode.`
 
 ## fake_epoch for testing
 In schedule.py, there is a variable called URL which includes the `fake_epoch` value.  The date and time should be set to something within the last couple of days for testing.  At EMF 2022, the first event in the schedule was at 10:00AM, the day before the opening ceremony so if you set the fake_epoch to yesterday at 10:00AM, it will be like reliving the first day of EMF 2022!
@@ -65,5 +62,19 @@ The LED indicates that the app is running and is off while the badge is sleeping
 
 ## Offline mode
 Offline mode is indicated in the top left corner of the screen.  While offline, you can use `BUTTON_UP` and `BUTTON_DOWN` on the main page to navigate through the schedule, moving back and forth between the distinct event start times.
+Because the EMF schedule is so vast and wonderful, the long descriptions in the detailed view of the events are reduced to the first 255 characters to to reduce the size of the local copy.
 
-Because the EMF schedule is so vast and wonderful, the long descriptions in the detailed view of the events are reduced to the first 255 characters to make it fit in the badge's storage.
+### Forced Offline mode (Badger 2040 W only)
+
+If there are issues with the WiFi, you can force the W version of the badge to run in offline mode until you have a good connection again.
+
+To switch between online and offline modes:
+1. Hold the `Reset` button on the back of the badge.
+2. Hold the `Up` and `Down` buttons as well.
+3. Release `Reset`.
+4. Release `Up` and `Down`.
+
+While the Badger 2040 W is in forced offline mode, the badge will continue to wake up every 10 minutes incrementing the display time each time it wakes up.
+
+
+

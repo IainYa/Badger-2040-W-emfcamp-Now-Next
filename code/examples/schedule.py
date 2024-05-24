@@ -8,30 +8,41 @@ import json
 #URL = "https://2022.schedule.emfcamp.dan-nixon.com/now-and-next?fake_epoch=2024-05-21T10:00:00%2b01:00&venue=Stage+A&venue=Stage+B&venue=Stage+C" # For testing with the 2022 schedule
 URL = "https://schedule.emfcamp.dan-nixon.com/now-and-next?venue=Stage+A&venue=Stage+B&venue=Stage+C" # For using at EMF
 
-offline = 0
-
-if badger2040.is_wireless():
-    import urequests
-    #offline = 1  # Un-Comment this line to force the Badger 2040 W into offline mode.
-else:
-    offline = 1
-
 state = {
-    "display_time": "2022-06-03 10:15:00"
+    "display_time": "2022-06-03 10:15:00",
+    "offline": False
 }
 
+badger_os.state_load("schedule", state)
 
 display = badger2040.Badger2040()
 jpeg = jpegdec.JPEG(display.display)
 
-badger_os.state_load("schedule", state)
-
 display.led(255)
+
+if badger2040.is_wireless():
+    import urequests
+    if display.pressed(badger2040.BUTTON_UP) and display.pressed(badger2040.BUTTON_DOWN):
+        state["offline"] = not state["offline"]
+        badger_os.state_save("schedule", state)
+else:
+    state["offline"] = True
 
 sleeptime = 10 #Minutes
 
 if badger2040.woken_by_rtc():
     timeout = 10 #Seconds
+    tstr = state["display_time"]
+    ttup = (int(tstr[0:4]), int(tstr[5:7]), int(tstr[8:10]), int(tstr[11:13]), int(tstr[14:16]), int(tstr[17:19]), 0, 0)
+    print(ttup)
+    t = time.mktime(ttup) + (sleeptime * 60) # Adding sleep time
+    print(t)
+    print(time.localtime(t))
+    tstr = "{}-{}-{} {}:{}:{}+01:00".format(time.localtime(t)[0], f"{time.localtime(t)[1]:02d}", f"{time.localtime(t)[2]:02d}", f"{time.localtime(t)[3]:02d}", f"{time.localtime(t)[4]:02d}", f"{time.localtime(t)[5]:02d}")
+    print(tstr)
+    state["display_time"] = tstr
+    badger_os.state_save("schedule", state)
+
 else:
     timeout = 30 #Seconds
 
@@ -68,11 +79,11 @@ EventNowC = Event("Stage C", "now")
 EventNextC = Event("Stage C", "next")
     
 
-if badger2040.is_wireless():
+if badger2040.is_wireless() and state["offline"] == False:
     try:
         display.connect()
     except:
-        offline = 1
+        state["offline"] = True
 
 display.set_pen(15)
 display.clear()
@@ -82,17 +93,17 @@ display.set_update_speed(badger2040.UPDATE_MEDIUM)
 
 
 def get_data():
-    global nowA, nextA, nowB, nextB, nowC, nextC, state, offline
+    global nowA, nextA, nowB, nextB, nowC, nextC, state
     
     req = URL
     print(f"Requesting URL: {req}")
-    if offline == 0:
+    if state["offline"] == False:
         try:
             r = urequests.get(req)
             j = r.json()
         except:
             print("Error retrieving JSON")
-            offline = 1
+            state["offline"] = True
             get_local_data()
             display_main()
             return
@@ -108,7 +119,7 @@ def get_data():
             t = time.mktime(ttup) + 3600 # Adding 1 hour for BST
             print(t)
             print(time.localtime(t))
-            tstr = "{}-{}-{}T{}:{}:{}+01:00".format(time.localtime(t)[0], f"{time.localtime(t)[1]:02d}", f"{time.localtime(t)[2]:02d}", f"{time.localtime(t)[3]:02d}", f"{time.localtime(t)[4]:02d}", f"{time.localtime(t)[5]:02d}")
+            tstr = "{}-{}-{} {}:{}:{}+01:00".format(time.localtime(t)[0], f"{time.localtime(t)[1]:02d}", f"{time.localtime(t)[2]:02d}", f"{time.localtime(t)[3]:02d}", f"{time.localtime(t)[4]:02d}", f"{time.localtime(t)[5]:02d}")
             print(tstr)
             state["display_time"] = tstr
         try:
@@ -320,7 +331,7 @@ def display_main():
     display.set_pen(15)
     display.set_font("bitmap8")
     display.set_thickness(4)
-    if offline == 1:
+    if state["offline"] == True:
         display.text("OFFLINE" , 2, 2, scale=1)
     display.text("EMF - Now and Next - Main Stages" , 50, 2, scale=1)
     display.text(state["display_time"][11:16], 270, 2, scale=1)
@@ -361,7 +372,7 @@ def display_Stage(event):
     display.set_pen(15)
     display.set_font("bitmap8")
     display.set_thickness(4)
-    if offline == 1:
+    if state["offline"] == True:
         display.text("OFFLINE" , 2, 2, scale=1)
     display.text("EMF - {} - {}".format(event.nownext, event.venue) , 50, 2, scale=1) ####
     
@@ -399,7 +410,7 @@ def display_Stage(event):
     display.update()
 
     
-if offline == 0:
+if state["offline"] == False:
     get_data()
 else:
     get_local_data()
@@ -413,7 +424,7 @@ while True:
         if curPage != Page.MAIN:
             display_main()
         else:
-            if offline == 1:
+            if state["offline"] == True:
                 state["display_time"] = prev_time
                 badger_os.state_save("schedule", state)
                 print(state["display_time"])
@@ -421,16 +432,17 @@ while True:
                 display_main()
     if display.pressed(badger2040.BUTTON_DOWN):
         lastPress = time.time()
-        if offline == 1:
-            state["display_time"] = next_time
-            badger_os.state_save("schedule", state)
-            print("down")
-            print(state["display_time"])
-            get_local_data()
-            display_main()
-        else:
-            get_data()
-            display_main()
+        if curPage == Page.MAIN:
+            if state["offline"] == True:
+                state["display_time"] = next_time
+                badger_os.state_save("schedule", state)
+                print("down")
+                print(state["display_time"])
+                get_local_data()
+                display_main()
+            else:
+                get_data()
+                display_main()
     if display.pressed(badger2040.BUTTON_A):
         lastPress = time.time()
         if curPage == Page.NOWA:
