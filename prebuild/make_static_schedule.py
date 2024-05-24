@@ -8,7 +8,7 @@ output_filepath = "../code/schedule/static-schedule.json"
 
 try:
     # Nothing on the main stages yet for 2024.json, so we'll use 2022.json and cross fingers for the same format :)
-    with urllib.request.urlopen("https://www.emfcamp.org/schedule/2022.json") as url:
+    with urllib.request.urlopen("https://www.emfcamp.org/schedule/2024.json") as url:
         data_out = []
         match_venues = ["Stage A", "Stage B", "Stage C"]
         schedule = json.load(url)
