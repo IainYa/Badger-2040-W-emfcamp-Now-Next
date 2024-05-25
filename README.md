@@ -1,7 +1,7 @@
 # Badger-2040-emfcamp-Now-Next
 An app for the Badger 2040 (Original and W versions) to display Now/Next info for the main stages at EMF2024 (www.emfcamp.org).  Intended to be copied into the Badger OS that ships with the badge.
 
-The app should work on both versions of the badge.  The app checks the version of the badge and uses a local copy of the schedule if WiFi is not available.
+The app should work on both versions of the badge.  The app checks the version of the badge and uses a local copy of the schedule if WiFi is not available.  Thanks to James R https://github.com/creativenucleus for creating the prebuild script! :-)
 
 This app uses an adapter for the EMF API which can be found here:  https://github.com/DanNixon/emfcamp-schedule-api/tree/main/adapter
 The adapter allows for testing by including a fake_epoch which offsets the schedule accordingly.  Thanks Dan! :-)
